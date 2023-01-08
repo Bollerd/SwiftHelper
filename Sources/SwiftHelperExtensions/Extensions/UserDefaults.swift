@@ -8,7 +8,7 @@ public enum ObjectSavableError: String, LocalizedError {
     case unableToDecode = "Unable to decode object into given type"
     
     public var errorDescription: String? {
-        she.translateTextForPackage(keyText: StringrawValue)
+        she.translateTextForPackage(keyText: rawValue)
     }
 }
 
