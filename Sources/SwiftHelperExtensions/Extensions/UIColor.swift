@@ -1,6 +1,7 @@
 import UIKit
 
 public extension UIColor {
+    /// get back the color values for red, green, blue and alpha channel
     var rgba: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
         var red: CGFloat = 0
         var green: CGFloat = 0
@@ -11,6 +12,7 @@ public extension UIColor {
         return (red, green, blue, alpha)
     }
     
+    /// get the xy representation of the rgb color required for deconz rest api (zigbee/hue)
     var xyColor: (x:CGFloat, y: CGFloat) {
         let r = self.rgba.red
         let g = self.rgba.green

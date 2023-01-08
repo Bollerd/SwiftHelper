@@ -1,7 +1,7 @@
-# SwiftHelper
+# SwiftHelperExtensions
 Extensions for Swift Classes and own reusable functions
 
-## import shl
+## import she
 
 Use this module to get translation text in the required language from the localization string files
 

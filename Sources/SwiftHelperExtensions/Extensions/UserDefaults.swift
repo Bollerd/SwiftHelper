@@ -13,6 +13,10 @@ public enum ObjectSavableError: String, LocalizedError {
 }
 
 public extension UserDefaults {
+    /// save a object to UserDefaults
+    /// - Parameters:
+    ///   - object: object to be saved to UserDefaults
+    ///   - forKey: key to save the object to
     func setObject<Object>(_ object: Object, forKey: String) throws where Object: Encodable {
         let encoder = JSONEncoder()
         do {
@@ -23,6 +27,11 @@ public extension UserDefaults {
         }
     }
     
+    /// read an object from UserDefaults
+    /// - Parameters:
+    ///   - forKey: key to be read
+    ///   - type: type of the object to read
+    /// - Returns: saved object
     func getObject<Object>(forKey: String, castTo type: Object.Type) throws -> Object where Object: Decodable {
         guard let data = data(forKey: forKey) else { throw ObjectSavableError.noValue }
         let decoder = JSONDecoder()
@@ -42,6 +51,10 @@ public extension UserDefaults {
 //
 
 public extension NSUbiquitousKeyValueStore {
+    /// save a object to iCloud KeyStore
+    /// - Parameters:
+    ///   - object: object to be saved to iCloud KeyStore
+    ///   - forKey: key to save the object to
     func setObject<Object>(_ object: Object, forKey: String) throws where Object: Encodable {
         let encoder = JSONEncoder()
         do {
@@ -52,6 +65,11 @@ public extension NSUbiquitousKeyValueStore {
         }
     }
     
+    /// read an object from iCloud KeyStore
+    /// - Parameters:
+    ///   - forKey: key to be read
+    ///   - type: type of the object to read
+    /// - Returns: saved object
     func getObject<Object>(forKey: String, castTo type: Object.Type) throws -> Object where Object: Decodable {
         guard let data = data(forKey: forKey) else { throw ObjectSavableError.noValue }
         let decoder = JSONDecoder()

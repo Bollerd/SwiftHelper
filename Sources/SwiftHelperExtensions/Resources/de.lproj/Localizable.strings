@@ -1,0 +1,5 @@
+
+"Unable to encode object into data"="Objekt kann nicht aus Data encodiert werden";
+"No data object found for the given key"="Kein Objekt für den Schlüsselwert gespeichert";
+"Unable to decode object into given type"="Objekt kann nicht in den angegebenen Typ decodiert werden";
+"Test"="Test Übersetzung in deutsch";

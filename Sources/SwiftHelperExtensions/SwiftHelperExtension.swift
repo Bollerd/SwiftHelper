@@ -35,6 +35,10 @@ public struct she {
     public static func translateText(keyText: String) -> String {
         return NSLocalizedString("\(keyText)", comment: "")
     }
+    
+    public static func testLocalization() -> String {
+        return she.translateText(keyText: "Test")
+    }
 }
 
 
