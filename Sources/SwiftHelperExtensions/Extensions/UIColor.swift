@@ -10,6 +10,22 @@ public extension UIColor {
 
         return (red, green, blue, alpha)
     }
+    
+    var xyColor: (x:CGFloat, y: CGFloat) {
+        let r = self.rgba.red
+        let g = self.rgba.green
+        let b = self.rgba.blue
+        let a = self.rgba.alpha
+        // convert rgb to required xy color format
+        let red = (r > 0.04045) ? pow((r + 0.055) / (1.0 + 0.055), 2.4) : (r / 12.92)
+        let green = (g > 0.04045) ? pow((g + 0.055) / (1.0 + 0.055), 2.4) : (g / 12.92)
+        let blue = (b > 0.04045) ? pow((b + 0.055) / (1.0 + 0.055), 2.4) : (b / 12.92)
+        let X = red * 0.649926 + green * 0.103455 + blue * 0.197109
+        let Y = red * 0.234327 + green * 0.743075 + blue * 0.022598
+        let Z = red * 0.0000000 + green * 0.053077 + blue * 1.035763
+        let x = X / (X + Y + Z)
+        let y = Y / (X + Y + Z)
+        
+        return (x, y)
+    }
 }
-
-// TODO Add rgba to xy convertion
