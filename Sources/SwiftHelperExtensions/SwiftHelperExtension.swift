@@ -36,8 +36,16 @@ public struct she {
         return NSLocalizedString("\(keyText)", comment: "")
     }
     
+    /// translate a text from localizable strings file from this package localization
+    /// - Parameter keyText: key text of the text to be translated from localizable file
+    /// - Returns: translated text
+    static func translateTextForPackage(keyText: String) -> String {
+        return NSLocalizedString("\(keyText)", bundle: Bundle.module, comment: "")
+    }
+    
+    
     public static func testLocalization() -> String {
-        return she.translateText(keyText: "Test")
+        return she.translateTextForPackage(keyText: "Test")
     }
 }
 
