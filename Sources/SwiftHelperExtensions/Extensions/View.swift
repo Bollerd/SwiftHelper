@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 public extension View {
     func snapshot<T: ObservableObject>(environmentObject: T,backgroundColor: Color?, namedColor: String?) -> UIImage {

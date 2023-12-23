@@ -102,6 +102,12 @@ public struct she {
         do {
             let encoded = try JSONEncoder().encode(data)
             return encoded
+            if let utf8String = String(data: encoded, encoding: .utf8) {
+                return utf8String
+            } else {
+                return nil
+            }
+
         } catch {
             print("Error encoding objects to JSON")
             print(error)
@@ -208,7 +214,7 @@ public struct she {
     
     static func checkIfLocalFileExists(fileName: String, folderName: String = "") -> Bool {
         do {
-            let slash = ""
+            var slash = ""
             if folderName != "" {
                 slash = "/"
             }
@@ -224,7 +230,7 @@ public struct she {
     
     static func getLocalFileContent(fileName: String, folderName: String = "") -> Data {
         do {
-            let slash = ""
+            var slash = ""
             if folderName != "" {
                 slash = "/"
             }
@@ -232,7 +238,7 @@ public struct she {
             return try File(path: folderName + slash + fileName).read()
         }
         catch {
-            print("Catch when trying to read content of file \(file)")
+            print("Catch when trying to read content of file \(fileName)")
             print(error.localizedDescription)
             return Data()
         }
