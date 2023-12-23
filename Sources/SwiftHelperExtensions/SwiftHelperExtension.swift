@@ -1,9 +1,16 @@
 import Foundation
 import SwiftUI
+import Files
 
 public struct she {
     public init() {
     }
+    
+    /*
+     **************************
+     * text translation functions
+     **************************
+     */
     
     /// translate a text from localizable strings file
     /// - Parameter keyText: key text of the text to be translated from localizable file
@@ -47,6 +54,13 @@ public struct she {
     public static func testLocalization() -> String {
         return she.translateTextForPackage(keyText: "Test")
     }
+    
+    
+    /*
+     **************************
+     * JSON wrappers functions
+     **************************
+     */
     
     /// converts the JSON string imported into an (array) or siwft classes/structs receiving the return value
     /// - Parameter jsonString: data to be decoded as data object
@@ -94,6 +108,12 @@ public struct she {
             return nil
         }
     }
+    
+    /*
+     **************************
+     * iCloud functions
+     **************************
+     */
     
     /// Write a file to the defined iCloud drie contaier with the provided filename
     /// - Parameters:
@@ -176,6 +196,55 @@ public struct she {
         } else {
             print("iCloud not available")
             return nil
+        }
+    }
+    
+    
+    /*
+     **************************
+     * local file functions
+     **************************
+     */
+    
+    static func checkIfLocalFileExists(fileName: String, folderName: String = "") -> Bool {
+        do {
+            let slash = ""
+            if folderName != "" {
+                slash = "/"
+            }
+            _ = try File(path: Folder.documents!.path + slash + folderName + "/" + fileName).name
+            return true
+        }
+        catch {
+            print("Catch when trying to check existance of file \(fileName)")
+            print(error.localizedDescription)
+            return false
+        }
+    }
+    
+    static func getLocalFileContent(fileName: String, folderName: String = "") -> Data {
+        do {
+            let slash = ""
+            if folderName != "" {
+                slash = "/"
+            }
+           
+            return try File(path: folderName + slash + fileName).read()
+        }
+        catch {
+            print("Catch when trying to read content of file \(file)")
+            print(error.localizedDescription)
+            return Data()
+        }
+    }
+    
+    static func createFolderIfNeeded(rootFolder: String = Folder.documents!.path, newFolder: String) {
+        do {
+            try Folder(path: rootFolder).createSubfolderIfNeeded(withName: newFolder)
+        }
+        catch {
+            print("Catch when trying to create cache directory")
+            print(error.localizedDescription)
         }
     }
 }
