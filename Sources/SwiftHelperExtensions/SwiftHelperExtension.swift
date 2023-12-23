@@ -101,7 +101,6 @@ public struct she {
     public static func convertObjectToJSONString<T: Codable>(data: T) -> String? {
         do {
             let encoded = try JSONEncoder().encode(data)
-            return encoded
             if let utf8String = String(data: encoded, encoding: .utf8) {
                 return utf8String
             } else {
@@ -204,7 +203,6 @@ public struct she {
             return nil
         }
     }
-    
     
     /*
      **************************
