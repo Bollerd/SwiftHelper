@@ -94,6 +94,90 @@ public struct she {
             return nil
         }
     }
+    
+    /// Write a file to the defined iCloud drie contaier with the provided filename
+    /// - Parameters:
+    ///   - containerId: container of the iCloud drive to write to
+    ///   - fileName: name of the file to write
+    ///   - fileContent: file content to be written (as data)
+    func writeCloudFile(containerId: String, fileName: String, fileContent: Data) {
+        let container = containerId
+        
+        let driveURL = FileManager.default.url(forUbiquityContainerIdentifier: container)?.appendingPathComponent("Documents")
+        guard let fileURL = driveURL?.appendingPathComponent(fileName) else {
+            return
+        }
+        
+        do {
+            try fileContent.write(to: fileURL)
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    
+    /// Read a file from iCloud drive - if file is in the cloud, the download is done
+    /// - Parameters:
+    ///   - containerId: iCloud Drive containerId
+    ///   - fileName: name of the file to be read
+    /// - Returns: String with the file content or nil of file not found
+    static func readCloudFile(containerId: String, fileName: String) -> String? {
+        let container = containerId
+        let fileManager = FileManager.default
+        
+        let driveURL = fileManager.url(forUbiquityContainerIdentifier: container)?.appendingPathComponent("Documents")
+        if let icloudFolderURL = driveURL {
+            if let urls = try? fileManager.contentsOfDirectory(at: icloudFolderURL, includingPropertiesForKeys: nil, options: []) {
+                for curFileUrl in urls {
+                    if (curFileUrl.lastPathComponent.contains(fileName)) {
+                        var lastPathComponent = curFileUrl.lastPathComponent
+                        if lastPathComponent.contains(".icloud") {
+                            var downloadedFilePath = ""
+                            DispatchQueue.background(background: {
+                                // do something in background
+                                do {
+                                    try fileManager.startDownloadingUbiquitousItem(at: curFileUrl )
+                                } catch {
+                                    print("Unexpected error: \(error).")
+                                }
+                                // Delete the "." which is at the beginning of the file name
+                                lastPathComponent.removeFirst()
+                                let folderPath = curFileUrl.deletingLastPathComponent().path
+                                downloadedFilePath = folderPath + "/" + lastPathComponent.replacingOccurrences(of: ".icloud", with: "")
+                                var isDownloaded = false
+                                while !isDownloaded {
+                                    if fileManager.fileExists(atPath: downloadedFilePath) {
+                                        isDownloaded = true
+                                    }
+                                }
+                            }, completion:{
+                                // when background job finished, do something in main thread
+                                // Do what you want with your downloaded file at path contains in variable "downloadedFilePath"
+                                let fileUrlLocal = URL(filePath: downloadedFilePath)
+                                do {
+                                    let fileContent = try String(contentsOf: fileUrlLocal, encoding: .utf8)
+                                    return fileContent
+                                } catch {
+                                    print(error.localizedDescription)
+                                    return nil
+                                }
+                            })
+                        } else {
+                            do {
+                                let fileContent = try String(contentsOf: curFileUrl, encoding: .utf8)
+                                return fileContent
+                            } catch {
+                                print(error.localizedDescription)
+                                return nil
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            print("iCloud not available")
+            return nil
+        }
+    }
 }
 
 
