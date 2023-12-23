@@ -145,6 +145,7 @@ public struct she {
     ///   - containerId: iCloud Drive containerId
     ///   - fileName: name of the file to be read
     /// - Returns: String with the file content or nil of file not found
+    /*
     static func readCloudFile(containerId: String, fileName: String) -> String? {
         let container = containerId
         let fileManager = FileManager.default
@@ -203,6 +204,7 @@ public struct she {
             return nil
         }
     }
+    */
     
     /*
      **************************
