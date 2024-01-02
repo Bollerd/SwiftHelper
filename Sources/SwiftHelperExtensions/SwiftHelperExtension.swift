@@ -145,8 +145,8 @@ public struct she {
     ///   - containerId: iCloud Drive containerId
     ///   - fileName: name of the file to be read
     /// - Returns: String with the file content or nil of file not found
-    /*
-    static func readCloudFile(containerId: String, fileName: String) -> String? {
+    
+    static func readCloudFile<T>(containerId: String, fileName: String, fileModel: T) where T: iCloudFileHelperModel {
         let container = containerId
         let fileManager = FileManager.default
         
@@ -181,19 +181,19 @@ public struct she {
                                 let fileUrlLocal = URL(filePath: downloadedFilePath)
                                 do {
                                     let fileContent = try String(contentsOf: fileUrlLocal, encoding: .utf8)
-                                    return fileContent
+                                    fileModel.fileContent = fileContent
                                 } catch {
                                     print(error.localizedDescription)
-                                    return nil
+                                    fileModel.fileContent = ""
                                 }
                             })
                         } else {
                             do {
                                 let fileContent = try String(contentsOf: curFileUrl, encoding: .utf8)
-                                return fileContent
+                                fileModel.fileContent = fileContent
                             } catch {
                                 print(error.localizedDescription)
-                                return nil
+                                fileModel.fileContent = ""
                             }
                         }
                     }
@@ -204,7 +204,6 @@ public struct she {
             return nil
         }
     }
-    */
     
     /*
      **************************
