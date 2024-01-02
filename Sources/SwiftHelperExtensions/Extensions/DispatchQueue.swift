@@ -5,13 +5,8 @@ protocol iCloudFileHelperModel: ObservableObject {
      var fileContent: String {get set}
 }
 
-class Model: ExtensionModel {
-    @Published var s = "start"
-    @Published var i = 0
-}
-
 extension DispatchQueue {
-    static func background<T>(delay: Double = 0.0, data: T, background: (()->Void)? = nil, completion: (() -> String?)? = nil) where T: ExtensionModel {
+    static func background<T>(delay: Double = 0.0, data: T, background: (()->Void)? = nil, completion: (() -> Void?)? = nil) where T: iCloudFileHelperModel {
         DispatchQueue.global(qos: .background).async {
             background?()
             if let completion = completion {
