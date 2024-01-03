@@ -144,6 +144,7 @@ public struct she {
     /// - Parameters:
     ///   - containerId: iCloud Drive containerId
     ///   - fileName: name of the file to be read
+    ///   - fileModel;  Object that implements protocol iCloudFileHelperModel - receives read file string after completion
     /// - Returns: String with the file content or nil of file not found
     
     static func readCloudFile<T>(containerId: String, fileName: String, fileModel: T) where T: iCloudFileHelperModel {
@@ -158,7 +159,7 @@ public struct she {
                         var lastPathComponent = curFileUrl.lastPathComponent
                         if lastPathComponent.contains(".icloud") {
                             var downloadedFilePath = ""
-                            DispatchQueue.background(background: {
+                            DispatchQueue.background(data: fileModel, background: {
                                 // do something in background
                                 do {
                                     try fileManager.startDownloadingUbiquitousItem(at: curFileUrl )
