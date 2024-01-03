@@ -202,7 +202,6 @@ public struct she {
             }
         } else {
             print("iCloud not available")
-            return nil
         }
     }
     
