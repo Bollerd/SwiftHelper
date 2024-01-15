@@ -125,7 +125,7 @@ public struct she {
     ///   - containerId: container of the iCloud drive to write to
     ///   - fileName: name of the file to write
     ///   - fileContent: file content to be written (as data)
-    func writeCloudFile(containerId: String, fileName: String, fileContent: Data) {
+    public static func writeCloudFile(containerId: String, fileName: String, fileContent: Data) {
         let container = containerId
         
         let driveURL = FileManager.default.url(forUbiquityContainerIdentifier: container)?.appendingPathComponent("Documents")
@@ -147,7 +147,7 @@ public struct she {
     ///   - fileModel;  Object that implements protocol iCloudFileHelperModel - receives read file string after completion
     /// - Returns: String with the file content or nil of file not found
     
-    static func readCloudFile<T>(containerId: String, fileName: String, fileModel: T) where T: iCloudFileHelperModel {
+    public static func readCloudFile<T>(containerId: String, fileName: String, fileModel: T) where T: iCloudFileHelperModel {
         let container = containerId
         let fileManager = FileManager.default
         
@@ -211,7 +211,7 @@ public struct she {
      **************************
      */
     
-    static func checkIfLocalFileExists(fileName: String, folderName: String = "") -> Bool {
+    public static func checkIfLocalFileExists(fileName: String, folderName: String = "") -> Bool {
         do {
             var slash = ""
             if folderName != "" {
@@ -227,7 +227,7 @@ public struct she {
         }
     }
     
-    static func getLocalFileContent(fileName: String, folderName: String = "") -> Data {
+    public static func getLocalFileContent(fileName: String, folderName: String = "") -> Data {
         do {
             var slash = ""
             if folderName != "" {
@@ -243,7 +243,7 @@ public struct she {
         }
     }
     
-    static func createFolderIfNeeded(rootFolder: String = Folder.documents!.path, newFolder: String) {
+    public static func createFolderIfNeeded(rootFolder: String = Folder.documents!.path, newFolder: String) {
         do {
             try Folder(path: rootFolder).createSubfolderIfNeeded(withName: newFolder)
         }
