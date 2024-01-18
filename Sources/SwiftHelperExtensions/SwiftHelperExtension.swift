@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import Files
+import ZIPFoundation
 
 public struct she {
     public init() {
@@ -125,7 +126,7 @@ public struct she {
     ///   - containerId: container of the iCloud drive to write to
     ///   - fileName: name of the file to write
     ///   - fileContent: file content to be written (as data)
-    public static func writeCloudFile(containerId: String, fileName: String, fileContent: Data) {
+    public static func writeCloudFile(containerId: String, fileName: String, fileContent: Data, zip: Bool = false) {
         let container = containerId
         
         let driveURL = FileManager.default.url(forUbiquityContainerIdentifier: container)?.appendingPathComponent("Documents")
@@ -134,7 +135,30 @@ public struct she {
         }
         
         do {
-            try fileContent.write(to: fileURL)
+            if zip == false {
+                try fileContent.write(to: fileURL)
+            } else {
+                guard let archive = Archive(accessMode: .create),
+                      let data = fileContent else {
+                    print("Zipping file failed: Did not get archive or data")
+                    return
+                }
+            
+                try? archive.addEntry(with: "inMemory.txt", type: .file, uncompressedSize: UInt32(data.count), compressionMethod: .deflate, bufferSize: 4, provider: { (position, size) -> Data in
+                    return data.subdata(in: position..<position+size)
+                })
+                
+                guard let archiveData = archive.data else {
+                    print("Zipping file failed: Did not get archivedata")
+                    return
+                }
+            
+                let memoryUrl = URL.documentsDirectory.appending(path: "message.zip")
+                try archiveData.write(to: memoryUrl, options: [.atomic, .completeFileProtection])
+                let zippedData = try Data(contentsOf: memoryUrl)
+                
+                try zippedData.write(to: fileURL)
+            }
         } catch {
             print(error.localizedDescription)
         }
@@ -147,7 +171,7 @@ public struct she {
     ///   - fileModel;  Object that implements protocol iCloudFileHelperModel - receives read file string after completion
     /// - Returns: String with the file content or nil of file not found
     
-    public static func readCloudFile<T>(containerId: String, fileName: String, fileModel: T) where T: iCloudFileHelperModel {
+    public static func readCloudFile<T>(containerId: String, fileName: String, fileModel: T, unzip: Bool = false) where T: iCloudFileHelperModel {
         let container = containerId
         let fileManager = FileManager.default
         
@@ -181,7 +205,15 @@ public struct she {
                                 // Do what you want with your downloaded file at path contains in variable "downloadedFilePath"
                                 let fileUrlLocal = URL(filePath: downloadedFilePath)
                                 do {
-                                    let fileContent = try String(contentsOf: fileUrlLocal, encoding: .utf8)
+                                    var fileContent = ""
+                                    
+                                    if unzip == false {
+                                        fileContent = try String(contentsOf: fileUrlLocal, encoding: .utf8)
+                                    } else {
+                                        let fileData = try Data(contentsOf: fileUrlLocal)
+                                        fileContent = she.unzipData(zippedData: fileData)
+                                    }
+                                    
                                     fileModel.fileContent = fileContent
                                 } catch {
                                     print(error.localizedDescription)
@@ -190,7 +222,15 @@ public struct she {
                             })
                         } else {
                             do {
-                                let fileContent = try String(contentsOf: curFileUrl, encoding: .utf8)
+                                var fileContent = ""
+                                
+                                if unzip == false {
+                                    fileContent = try String(contentsOf: curFileUrl, encoding: .utf8)
+                                } else {
+                                    let fileData = try Data(contentsOf: curFileUrl)
+                                    fileContent = she.unzipData(zippedData: fileData)
+                                }
+                                    
                                 fileModel.fileContent = fileContent
                             } catch {
                                 print(error.localizedDescription)
@@ -202,6 +242,55 @@ public struct she {
             }
         } else {
             print("iCloud not available")
+        }
+    }
+    
+    /// Unzip data and return the unzipped value as data
+    /// - Parameter zippedData: data object of zipped content
+    /// - Returns:unzipped value of zipped data
+   static func unzipData(zippedData: Data) -> Data {
+        do {
+            guard let archive = Archive(data: zippedData, accessMode: .read) else {
+                print("Unzipping data failed; unable to get archive")
+                return Data()
+            }
+            guard let entry = archive["inMemory.txt"] else {
+                print("Unzipping data failed; unable to get entry")
+                return Data()
+            }
+            var returnData = Data()
+            try archive.extract(entry, consumer: { (data) in
+                returnData = data
+            })
+            return returnData
+        } catch {
+            print(error.localizedDescription)
+            return Data()
+        }
+    }
+    
+    /// Unzip data and return the unzipped value as string
+    /// - Parameter zippedData: data object of zipped content
+    /// - Returns:String value of zipped data
+    static func unzipData(zippedData: Data) -> String {
+        do {
+            guard let archive = Archive(data: zippedData, accessMode: .read) else {
+                print("Unzipping data failed; unable to get archive")
+                return ""
+            }
+            guard let entry = archive["inMemory.txt"] else {
+                print("Unzipping data failed; unable to get entry")
+                return ""
+            }
+            var returnString = ""
+            try archive.extract(entry, consumer: { (data) in
+                let str = String(decoding: data, as: UTF8.self)
+                returnString += str
+                return returnString
+            })
+        } catch {
+            print(error.localizedDescription)
+            return ""
         }
     }
     
