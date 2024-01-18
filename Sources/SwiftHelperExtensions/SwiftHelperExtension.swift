@@ -285,8 +285,8 @@ public struct she {
             try archive.extract(entry, consumer: { (data) in
                 let str = String(decoding: data, as: UTF8.self)
                 returnString += str
-                return returnString
             })
+            return returnString
         } catch {
             print(error.localizedDescription)
             return ""
