@@ -138,14 +138,13 @@ public struct she {
             if zip == false {
                 try fileContent.write(to: fileURL)
             } else {
-                guard let archive = Archive(accessMode: .create),
-                      let data = fileContent else {
+                guard let archive = Archive(accessMode: .create) else {
                     print("Zipping file failed: Did not get archive or data")
                     return
                 }
             
-                try? archive.addEntry(with: "inMemory.txt", type: .file, uncompressedSize: UInt32(data.count), compressionMethod: .deflate, bufferSize: 4, provider: { (position, size) -> Data in
-                    return data.subdata(in: position..<position+size)
+                try? archive.addEntry(with: "inMemory.txt", type: .file, uncompressedSize: UInt32(fileContent.count), compressionMethod: .deflate, bufferSize: 4, provider: { (position, size) -> Data in
+                    return fileContent.subdata(in: position..<position+size)
                 })
                 
                 guard let archiveData = archive.data else {
